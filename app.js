@@ -86,9 +86,10 @@ app.use((req, res, next) => {
 });
 
 // ---------------- ROUTES ----------------
-// app.get("/", (req, res) => {
-//   res.render("home.ejs"); // make a simple home page
-// });
+app.get("/", (req, res) => {
+  res.redirect("/listings");
+});
+
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
