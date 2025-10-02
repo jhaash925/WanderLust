@@ -1,128 +1,217 @@
 <% layout("/layouts/boilerplate") %> 
-  <body>
-    <br>
-    <style>
-      #filters{
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-      .filter{
-        text-align: center;
-        margin-right: 2rem;
-        margin-top: 1.2rem;
-        opacity: 0.7;
-      }
-      .filter:hover{
-        opacity: 1;
-        cursor: pointer;
-      }
-      .filter p{
-        font-size: 0.8rem;
-      }
-      .tax-info{
-        display: none;
-      }
-      .tax-toggle{
-        border: 1px solid black;
-        border-radius: 1rem;
-        height: 3.2rem;
-        padding: 1rem;
-        margin-left: 2rem;
-        display: flex;
-        align-items: center;
-      }
-      /* Custom color for bootstrap toggle switch */
-      .form-check-input:checked {
-        background-color: #fe424d !important;
-        border-color: #fe424d !important;
-      }
+<body>
+  <br>
+  <style>
+    #filters{
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .filter{
+      text-align: center;
+      opacity: 0.7;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .filter:hover{
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    .filter p{
+      font-size: 0.8rem;
+      margin: 0;
+    }
+    .filter.selected{
+      opacity: 1;
+      font-weight: bold;
+      color: #fe424d;
+    }
+    .filter-controls{
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-left: auto; /* push to right */
+    }
+    .tax-info{
+      display: none;
+    }
+    .tax-toggle{
+      border: 1px solid black;
+      border-radius: 1rem;
+      height: 3rem;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+    }
+    .form-check-input:checked {
+      background-color: #fe424d !important;
+      border-color: #fe424d !important;
+    }
+    .form-check-input:focus {
+      border-color: #fe424d !important;
+      box-shadow: 0 0 0 0.25rem rgba(254, 66, 77, 0.25) !important;
+    }
+    .listing-card img {
+      object-fit: cover;
+    }
+    .custom-btn {
+      background-color: #fe424d !important;
+      border-color: #fe424d !important;
+      color: white !important;
+    }
 
-      .form-check-input:focus {
-        border-color: #fe424d !important;
-        box-shadow: 0 0 0 0.25rem rgba(254, 66, 77, 0.25) !important;
-      }
+    .custom-btn:hover {
+      background-color: #d63b44 !important; /* slightly darker on hover */
+      border-color: #d63b44 !important;
+    }
 
-    </style>
+  </style>
 
-    <div id="filters">
-      <div class="filter">
-        <div><i class="fa-solid fa-fire"></i></div>
-        <p>Trending</p>
+  <!-- ===== FILTER ICONS ROW ===== -->
+  <div class="d-flex align-items-center" id="filters">
+    <% const categories = ["Trending","Rooms","Iconic cities","Mountains","Castles","Amazing pools","Camping","Farms","Arctic","Doms","Boats"]; %>
+    <% categories.forEach(cat => { %>
+      <div class="filter <%= filters?.category === cat ? 'selected' : '' %>" data-category="<%= cat %>">
+        <div>
+          <% if(cat === "Trending"){ %><i class="fa-solid fa-fire"></i><% } %>
+          <% if(cat === "Rooms"){ %><i class="fa-solid fa-bed"></i><% } %>
+          <% if(cat === "Iconic cities"){ %><i class="fa-solid fa-mountain-city"></i><% } %>
+          <% if(cat === "Mountains"){ %><i class="fa-solid fa-mountain"></i><% } %>
+          <% if(cat === "Castles"){ %><i class="fa-brands fa-fort-awesome"></i><% } %>
+          <% if(cat === "Amazing pools"){ %><i class="fa-solid fa-person-swimming"></i><% } %>
+          <% if(cat === "Camping"){ %><i class="fa-solid fa-campground"></i><% } %>
+          <% if(cat === "Farms"){ %><i class="fa-solid fa-cow"></i><% } %>
+          <% if(cat === "Arctic"){ %><i class="fa-solid fa-snowflake"></i><% } %>
+          <% if(cat === "Doms"){ %><i class="fa-solid fa-landmark-dome"></i><% } %>
+          <% if(cat === "Boats"){ %><i class="fa-solid fa-ship"></i><% } %>
+        </div>
+        <p><%= cat %></p>
       </div>
-      <div class="filter">
-        <div><i class="fa-solid fa-bed"></i></div>
-        <p>Rooms</p>
-      </div>
-      <div class="filter">
-        <div><i class="fa-solid fa-mountain-city"></i></div>
-        <p>Iconic cities</p>
-      </div>
-      <div class="filter">
-        <div><i class="fa-solid fa-mountain"></i></div>
-        <p>Mountains</p>
-      </div>
-      <div class="filter">
-        <div><i class="fa-brands fa-fort-awesome"></i></div>
-        <p>Castles</p>
-      </div>
-      <div class="filter">
-        <div><i class="fa-solid fa-person-swimming"></i></div>
-        <p>Amazing pools</p>
-      </div>
-      <div class="filter">
-        <div><i class="fa-solid fa-campground"></i></div>
-        <p>Camping</p>
-      </div>
-      <div class="filter">
-        <div><i class="fa-solid fa-cow"></i></div>
-        <p>Farms</p>
-      </div>
-      <div class="filter">
-        <div><i class="fa-solid fa-snowflake"></i></div>
-        <p>Arctic</p>
-      </div>   
-      <div class="filter">
-        <div><i class="fa-solid fa-landmark-dome"></i></div>
-        <p>Doms</p>
-      </div>
-      <div class="filter">
-        <div><i class="fa-solid fa-ship"></i></div>
-        <p>Boats</p>
-      </div> 
+    <% }); %>
+
+    <!-- ===== FILTER BUTTON + TAX TOGGLE ===== -->
+    <div class="filter-controls">
+      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filterModal">
+        Filters
+      </button>
       <div class="tax-toggle">
         <div class="form-check-reverse form-switch">
-  <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
-  <label class="form-check-label" for="switchCheckDefault">Display total after taxes</label>
-</div>
-      </div>   
+          <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+          <label class="form-check-label" for="switchCheckDefault">Display total after taxes</label>
+        </div>
+      </div>
     </div>
-    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
-      <% for(let listing of allListings) { %>
-      <a href="/listings/<%=listing._id%>" class="listing-link">
-      <div class="card col listing-card">
-      <img src="<%=listing.image.url%>" class="card-img-top" alt="listing-image"  style="height: 20rem;">
-      <div class="card-img-overlay"></div>
-      <div class="card-body">
-        <p class="card-text"><b><%= listing.title %></b> <br>
-        &#8377;<%= listing.price.toLocaleString("en-IN") %> / night
-        <i class="tax-info">&nbsp;+  18% GST</i>
-        </p>
-      </div>
-      </div>
+  </div>
+
+  <!-- ===== LISTINGS CARDS ===== -->
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3 g-3">
+    <% (allListings || []).forEach(listing => { %>
+      <a href="/listings/<%=listing._id%>" class="listing-link text-decoration-none">
+        <div class="card col listing-card">
+          <img src="<%=listing.image?.url || '/images/default.jpg'%>" class="card-img-top" alt="listing-image" style="height: 20rem;">
+          <div class="card-img-overlay"></div>
+          <div class="card-body">
+            <p class="card-text">
+              <b><%= listing.title %></b><br>
+              &#8377;<%= listing.price.toLocaleString("en-IN") %> / night
+              <i class="tax-info">&nbsp;+ 18% GST</i>
+            </p>
+          </div>
+        </div>
       </a>
-      <%}%>
-    </div>
-    <script>
-      let taxSwitch = document.getElementById('switchCheckDefault');
-      taxSwitch.addEventListener("click", () => {
-        let taxInfo = document.getElementsByClassName('tax-info');
-        for(info of taxInfo){
-          if(info.style.display != "inline"){
-            info.style.display = "inline";
-          } else {
-            info.style.display = "none";
-          }
-        }
+    <% }); %>
+  </div>
+
+  <!-- ===== TAX TOGGLE SCRIPT ===== -->
+  <script>
+    // Tax toggle
+    let taxSwitch = document.getElementById('switchCheckDefault');
+    taxSwitch.addEventListener("click", () => {
+      let taxInfo = document.getElementsByClassName('tax-info');
+      for(let info of taxInfo){
+        info.style.display = (info.style.display !== "inline") ? "inline" : "none";
+      }
+    });
+
+    // Clickable icons to filter
+    const filtersIcons = document.querySelectorAll(".filter[data-category]");
+    filtersIcons.forEach(icon => {
+      icon.addEventListener("click", () => {
+        const category = icon.dataset.category;
+        const form = document.createElement("form");
+        form.method = "GET";
+        form.action = "/listings/search-filter";
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "category";
+        input.value = category;
+
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
       });
-    </script>
+    });
+  </script>
+
+  <!-- ===== FILTER MODAL ===== -->
+  <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form action="/listings/search-filter" method="GET">
+          <div class="modal-header">
+            <h5 class="modal-title" id="filterModalLabel">Filter Listings</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Search -->
+            <div class="mb-3">
+              <label for="q" class="form-label">Search Destinations</label>
+              <input type="text" class="form-control" name="q" id="q" placeholder="Enter a location or title" value="<%= q || '' %>">
+            </div>
+            <!-- Category -->
+            <div class="mb-3">
+              <label for="category" class="form-label">Category</label>
+              <select class="form-select" name="category" id="category">
+                <% categories.forEach(cat => { %>
+                  <option value="<%= cat %>" <%= (filters?.category === cat || (!filters?.category && cat==="All")) ? "selected" : "" %>><%= cat %></option>
+                <% }); %>
+              </select>
+            </div>
+            <!-- Price -->
+            <div class="mb-3">
+              <label class="form-label">Price Range (₹)</label>
+              <div class="d-flex">
+                <input type="number" class="form-control me-2" name="minPrice" placeholder="Min" value="<%= filters?.minPrice || '' %>">
+                <input type="number" class="form-control" name="maxPrice" placeholder="Max" value="<%= filters?.maxPrice || '' %>">
+              </div>
+            </div>
+            <!-- Rooms -->
+            <div class="mb-3">
+              <label for="rooms" class="form-label">Minimum Rooms</label>
+              <input type="number" class="form-control" name="rooms" id="rooms" min="1" value="<%= filters?.rooms || '' %>">
+            </div>
+            <!-- Amenities -->
+            <div class="mb-3">
+              <label class="form-label">Amenities</label>
+              <% const amenityList = ["Wifi","Parking","Kitchen","Pool"]; %>
+              <% amenityList.forEach(a => { %>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="<%= a %>" id="amenity<%= a %>" <%= filters?.amenities?.includes(a) ? "checked" : "" %>>
+                  <label class="form-check-label" for="amenity<%= a %>"><%= a %></label>
+                </div>
+              <% }); %>
+            </div>
+          </div>
+          <div class="modal-footer">
+  <button type="submit" class="btn btn-primary custom-btn">Apply Filters</button>
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+</div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</body>

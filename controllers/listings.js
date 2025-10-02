@@ -5,13 +5,15 @@ const axios = require("axios");
 module.exports.index = async (req, res) => {
   try {
     const allListings = await Listing.find({});
-    res.render("listings/index.ejs", { allListings });
+    // Pass empty query and filters so EJS doesn't break
+    res.render("listings/index.ejs", { allListings, q: '', filters: {} });
   } catch (err) {
     console.error(err);
     req.flash("error", "Cannot fetch listings");
     res.redirect("/");
   }
 };
+
 
 module.exports.renderNewForm = (req, res) => {
   res.render("listings/new.ejs");
@@ -138,3 +140,79 @@ module.exports.deleteListing = async (req, res) => {
     res.redirect("/listings");
   }
 };
+
+// Fuzzy search by title or location
+module.exports.searchListings = async (req, res) => {
+  const { q } = req.query;
+  if (!q || q.trim() === "") {
+    return res.redirect("/listings");
+  }
+
+  try {
+    const listings = await Listing.find(
+      { $text: { $search: q } },               // MongoDB full-text search
+      { score: { $meta: "textScore" } }       // include relevance score
+    )
+    .sort({ score: { $meta: "textScore" } })   // sort by relevance
+    .limit(50);                                // limit results for performance
+
+    res.render("listings/index.ejs", { allListings: listings, currUser: req.user, q });
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Search failed");
+    res.redirect("/listings");
+  }
+};
+
+module.exports.searchAndFilterListings = async (req, res) => {
+  const { q, category, minPrice, maxPrice, rooms, amenities } = req.query;
+
+  let filter = {};
+
+  // ===== Text search =====
+  if (q && q.trim() !== "") {
+    filter.$text = { $search: q };
+  }
+
+  // ===== Category filter =====
+  if (category && category !== "All") {
+    filter.categories = category;
+  }
+
+  // ===== Price filter =====
+  if (minPrice || maxPrice) {
+    filter.price = {};
+    if (minPrice) filter.price.$gte = parseInt(minPrice);
+    if (maxPrice) filter.price.$lte = parseInt(maxPrice);
+  }
+
+  // ===== Rooms filter =====
+  if (rooms) {
+    filter.rooms = { $gte: parseInt(rooms) };
+  }
+
+  // ===== Amenities filter =====
+  if (amenities) {
+    // amenities can be multiple, comma-separated
+    const amenitiesArr = amenities.split(",");
+    filter.amenities = { $all: amenitiesArr };
+  }
+
+  try {
+    let query = Listing.find(filter);
+
+    // Sort by relevance if text search exists
+    if (filter.$text) {
+      query = query.sort({ score: { $meta: "textScore" } }).select({ score: { $meta: "textScore" } });
+    }
+
+    const listings = await query.limit(50);
+
+    res.render("listings/index.ejs", { allListings: listings, currUser: req.user, q, filters: req.query });
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Search failed");
+    res.redirect("/listings");
+  }
+};
+
