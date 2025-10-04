@@ -2,6 +2,7 @@
 <body>
   <br>
   <style>
+    /* === Styles for filters, cards, buttons === */
     #filters{
       display: flex;
       flex-wrap: wrap;
@@ -32,7 +33,7 @@
       display: flex;
       align-items: center;
       gap: 1rem;
-      margin-left: auto; /* push to right */
+      margin-left: auto;
     }
     .tax-info{
       display: none;
@@ -61,17 +62,22 @@
       border-color: #fe424d !important;
       color: white !important;
     }
-
     .custom-btn:hover {
-      background-color: #d63b44 !important; /* slightly darker on hover */
+      background-color: #d63b44 !important;
       border-color: #d63b44 !important;
     }
 
+    /* Hide category filters on mobile and tablet views */
+    @media (max-width: 1024px) {
+      #filters {
+        display: none !important;
+      }
+    }
   </style>
 
-  <!-- ===== FILTER ICONS ROW ===== -->
+  <!-- ===== CATEGORY ICONS ROW ===== -->
   <div class="d-flex align-items-center" id="filters">
-    <% const categories = ["Trending","Rooms","Iconic cities","Mountains","Castles","Amazing pools","Camping","Farms","Arctic","Doms","Boats"]; %>
+    <% const categories = ["Trending","Rooms","Iconic cities","Mountains","Castles","Pools","Camping","Farms","Arctic","Doms","Boats"]; %>
     <% categories.forEach(cat => { %>
       <div class="filter <%= filters?.category === cat ? 'selected' : '' %>" data-category="<%= cat %>">
         <div>
@@ -80,7 +86,7 @@
           <% if(cat === "Iconic cities"){ %><i class="fa-solid fa-mountain-city"></i><% } %>
           <% if(cat === "Mountains"){ %><i class="fa-solid fa-mountain"></i><% } %>
           <% if(cat === "Castles"){ %><i class="fa-brands fa-fort-awesome"></i><% } %>
-          <% if(cat === "Amazing pools"){ %><i class="fa-solid fa-person-swimming"></i><% } %>
+          <% if(cat === "Pools"){ %><i class="fa-solid fa-person-swimming"></i><% } %>
           <% if(cat === "Camping"){ %><i class="fa-solid fa-campground"></i><% } %>
           <% if(cat === "Farms"){ %><i class="fa-solid fa-cow"></i><% } %>
           <% if(cat === "Arctic"){ %><i class="fa-solid fa-snowflake"></i><% } %>
@@ -91,7 +97,7 @@
       </div>
     <% }); %>
 
-    <!-- ===== FILTER BUTTON + TAX TOGGLE ===== -->
+    <!-- Filter button + tax toggle -->
     <div class="filter-controls">
       <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#filterModal">
         Filters
@@ -105,13 +111,23 @@
     </div>
   </div>
 
+<div class="container my-3 d-md-none" id="mobile-search">
+  <form class="d-flex justify-content-center gap-2" role="search" action="/listings/search-filter" method="GET">
+    <input class="form-control search-inp" type="search" name="q" placeholder="Search destinations"/>
+    <button class="btn search-btn" type="submit">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
+  </form>
+  </div>
+
+
+
   <!-- ===== LISTINGS CARDS ===== -->
   <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3 g-3">
     <% (allListings || []).forEach(listing => { %>
       <a href="/listings/<%=listing._id%>" class="listing-link text-decoration-none">
         <div class="card col listing-card">
           <img src="<%=listing.image?.url || '/images/default.jpg'%>" class="card-img-top" alt="listing-image" style="height: 20rem;">
-          <div class="card-img-overlay"></div>
           <div class="card-body">
             <p class="card-text">
               <b><%= listing.title %></b><br>
@@ -126,7 +142,7 @@
 
   <!-- ===== TAX TOGGLE SCRIPT ===== -->
   <script>
-    // Tax toggle
+    // Toggle GST
     let taxSwitch = document.getElementById('switchCheckDefault');
     taxSwitch.addEventListener("click", () => {
       let taxInfo = document.getElementsByClassName('tax-info');
@@ -135,7 +151,7 @@
       }
     });
 
-    // Clickable icons to filter
+    // Category icon click
     const filtersIcons = document.querySelectorAll(".filter[data-category]");
     filtersIcons.forEach(icon => {
       icon.addEventListener("click", () => {
@@ -143,12 +159,10 @@
         const form = document.createElement("form");
         form.method = "GET";
         form.action = "/listings/search-filter";
-
         const input = document.createElement("input");
         input.type = "hidden";
         input.name = "category";
         input.value = category;
-
         form.appendChild(input);
         document.body.appendChild(form);
         form.submit();
@@ -171,15 +185,18 @@
               <label for="q" class="form-label">Search Destinations</label>
               <input type="text" class="form-control" name="q" id="q" placeholder="Enter a location or title" value="<%= q || '' %>">
             </div>
+
             <!-- Category -->
             <div class="mb-3">
               <label for="category" class="form-label">Category</label>
               <select class="form-select" name="category" id="category">
-                <% categories.forEach(cat => { %>
+                <% const cats = ["All", ...categories]; %>
+                <% cats.forEach(cat => { %>
                   <option value="<%= cat %>" <%= (filters?.category === cat || (!filters?.category && cat==="All")) ? "selected" : "" %>><%= cat %></option>
-                <% }); %>
+                <% }) %>
               </select>
             </div>
+
             <!-- Price -->
             <div class="mb-3">
               <label class="form-label">Price Range (₹)</label>
@@ -188,11 +205,13 @@
                 <input type="number" class="form-control" name="maxPrice" placeholder="Max" value="<%= filters?.maxPrice || '' %>">
               </div>
             </div>
-            <!-- Rooms -->
+
+            <!-- Minimum Rooms -->
             <div class="mb-3">
               <label for="rooms" class="form-label">Minimum Rooms</label>
               <input type="number" class="form-control" name="rooms" id="rooms" min="1" value="<%= filters?.rooms || '' %>">
             </div>
+
             <!-- Amenities -->
             <div class="mb-3">
               <label class="form-label">Amenities</label>
@@ -202,14 +221,13 @@
                   <input class="form-check-input" type="checkbox" name="amenities" value="<%= a %>" id="amenity<%= a %>" <%= filters?.amenities?.includes(a) ? "checked" : "" %>>
                   <label class="form-check-label" for="amenity<%= a %>"><%= a %></label>
                 </div>
-              <% }); %>
+              <% }) %>
             </div>
           </div>
           <div class="modal-footer">
-  <button type="submit" class="btn btn-primary custom-btn">Apply Filters</button>
-  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-</div>
-
+            <button type="submit" class="btn btn-primary custom-btn">Apply Filters</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
         </form>
       </div>
     </div>

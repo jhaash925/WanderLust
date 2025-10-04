@@ -1,3 +1,4 @@
+// models/Listing.js
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Review = require("./review.js");
@@ -34,17 +35,23 @@ const listingSchema = new Schema({
     ref: "User",
   },
 
-  // ===== NEW FIELDS FOR FILTERING =====
-  categories: [{ type: String, index: true }],
-  propertyType: { type: String, index: true },
+  // NEW FIELD
+  category: {
+    type: String,
+    required: true,
+    enum: ["Trending","Rooms","Iconic cities","Mountains","Castles","Pools","Camping","Farms","Arctic","Doms","Boats"]
+  },
+
+  // existing fields for filtering
+  propertyType: { type: String },
   rooms: { type: Number, default: 1, index: true },
   beds: { type: Number, default: 1 },
   bathrooms: { type: Number, default: 1 },
-  amenities: [{ type: String, index: true }],
+  amenities: [{ type: String }],
   hostLanguage: [{ type: String, index: true }],
 });
 
-// Middleware to delete reviews when listing is deleted
+// Delete reviews when listing is deleted
 listingSchema.post("findOneAndDelete", async (listing) => {
   if (listing) {
     await Review.deleteMany({ _id: { $in: listing.reviews } });
@@ -54,12 +61,11 @@ listingSchema.post("findOneAndDelete", async (listing) => {
 // Indexes for faster filtering
 listingSchema.index({ 'geometry': '2dsphere' });
 listingSchema.index({ price: 1 });
-listingSchema.index({ categories: 1 });
+listingSchema.index({ category: 1 });
 listingSchema.index({ amenities: 1 });
 listingSchema.index({ propertyType: 1 });
 
-// ===== TEXT INDEX FOR FUZZY SEARCH =====
+// Text index for search
 listingSchema.index({ title: "text", location: "text" });
 
-const Listing = mongoose.model("Listing", listingSchema);
-module.exports = Listing;
+module.exports = mongoose.model("Listing", listingSchema);

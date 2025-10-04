@@ -23,12 +23,18 @@ const userRouter = require("./routes/user.js");
 // ---------------- MONGOOSE ----------------
 const dbUrl = process.env.ATLASDB_URL;
 
-mongoose.connect(dbUrl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(dbUrl)
   .then(() => console.log("✅ Connected to DB"))
-  .catch(err => console.log("❌ DB Connection Error:", err));
+  .catch(err => {
+    console.log("❌ DB Connection Error:", err.message);
+    if (err.message.includes('IP')) {
+      console.log("💡 This is likely an IP whitelist issue with MongoDB Atlas.");
+      console.log("   Please add your current IP address to the IP whitelist in your MongoDB Atlas dashboard:");
+      console.log("   https://cloud.mongodb.com > Network Access > Add IP Address");
+      console.log("   Or add 0.0.0.0/0 to allow access from anywhere (less secure)");
+    }
+    console.log("   The server will continue running but database operations will fail.");
+  });
 
 // ---------------- APP SETTINGS ----------------
 app.engine("ejs", ejsMate);
@@ -78,12 +84,14 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 // ---------------- FLASH MIDDLEWARE ----------------
+// Middleware to make flash messages available in all templates
 app.use((req, res, next) => {
-  res.locals.success = req.flash("success");
-  res.locals.error = req.flash("error");
-  res.locals.currUser = req.user;
-  next();
+    res.locals.currUser = req.user; // passport puts the logged-in user on req.user
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    next();
 });
+
 
 // ---------------- ROUTES ----------------
 app.get("/", (req, res) => {
@@ -107,6 +115,17 @@ app.use((err, req, res, next) => {
     });
 // ---------------- SERVER ----------------
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server is listening on port ${PORT}`);
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} is already in use. Please kill the process using this port or choose a different port.`);
+    console.error(`   To find the process: lsof -i :${PORT}`);
+    console.error(`   To kill the process: kill -9 <PID>`);
+  } else {
+    console.error('❌ Server error:', err);
+  }
+  process.exit(1);
 });

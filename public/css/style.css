@@ -1,114 +1,129 @@
-body{
-    font-family: "Plus Jakarta Sans", sans-sarif !important;
+/* ====== GENERAL ====== */
+body {
+    font-family: "Plus Jakarta Sans", sans-serif !important;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
-.container{
+.container {
     flex: 1;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
-/* NavBar */
-.navbar{
+/* ====== NAVBAR ====== */
+.navbar {
     height: 5rem;
     background-color: white;
-}
-.fa-compass{
-    color: #fe424d;
-    font-size: 2rem;
-}
-.nav-link{
-    color: #222222 !important;
-}
-
-/* Footer */
-.f-info-links a{
-    text-decoration: none;
-    color: #222222;
-}
-.f-info-links a:hover{
-    text-decoration: underline;
-}
-.f-info-links, .f-info-socials, .f-info-brand{
-    width: 100%;
+    padding: 0 1rem;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
 }
-.f-info-socials i{
-    font-size: 1.2rem;
-    margin-right: 1rem;
-}
-.f-info{
-    text-align: center;
-    height: 8rem;
-    background-color: #ebebeb;
-    display: flex;
+.fa-compass { color: #fe424d; font-size: 2rem; }
+.nav-link { color: #222222 !important; }
+
+/* ====== FOOTER ====== */
+.f-info-links a { text-decoration: none; color: #222222; }
+.f-info-links a:hover { text-decoration: underline; }
+.f-info-links, .f-info-socials, .f-info-brand { width: 100%; display: flex; align-items: center; justify-content: center; }
+.f-info-socials i { font-size: 1.2rem; margin-right: 1rem; }
+.f-info { text-align: center; height: auto; padding: 1rem 0; background-color: #ebebeb; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+
+/* ====== CARDS ====== */
+.listing-card { border: none !important; margin-bottom: 2rem; }
+.card-img-top { border-radius: 1rem !important; width: 100% !important; height: auto !important; object-fit: cover !important; }
+.card-body { padding: 0.5rem !important; }
+.card-text p { font-weight: 400 !important; font-size: 0.95rem; }
+.listing-link { text-decoration: none; }
+
+/* CARD HOVER EFFECT */
+.card-img-overlay { opacity: 0; transition: all 0.3s ease-in-out; }
+.card-img-overlay:hover { opacity: 0.2; background-color: white; }
+
+/* ====== BUTTONS ====== */
+.add-btn, .edit-btn, .delete-btn { background-color: #fe424d !important; border: none !important; color: white !important; }
+.search-inp { border-radius: 25px !important; height: 2.5rem !important; }
+.search-btn { border-radius: 25px !important; background-color: #fe424d !important; border-color: #fe424d !important; color: white !important; height: 2.5rem !important; min-width: 2.5rem !important; }
+
+/* Buttons container (desktop default) */
+.btns {
+    display: flex !important;
+    gap: 1rem;
     flex-wrap: wrap;
-    justify-content: center;
-    align-items: space-evenly;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+}
+.btns .btn {
+    min-width: 120px !important;
 }
 
-/* Cards */
-.listing-card{
-    border: none !important;
-    margin-bottom: 2rem;
-}
-.card-img-top{
-    border-radius: 1rem !important;
-    width: 100% !important;
-    object-fit: cover !important;
-}
-.card-body{
-    padding: 0 !important;
-}
-.card-text p{
-    font-weight: 400 !important;
-}
-.listing-link{
-    text-decoration: none;
+/* ====== SHOW PAGE ====== */
+.show-img { width: 100%; height: auto; object-fit: cover; border-radius: 1rem; }
+.show-card { padding-left: 0; padding-right: 0; }
+
+/* ====== MAP ====== */
+#map { width: 100%; height: 300px; border-radius: 1rem; }
+
+/* ====== FORMS ====== */
+.form-control, .form-select { width: 100%; }
+
+/* ====== RATINGS ====== */
+@media(max-width: 576px) { .starability-result, .starability-slot { width: 120px; height: 25px; } }
+
+/* ====== MOBILE VIEW ONLY ====== */
+@media (max-width: 768px) {
+
+    .btns {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .btns .btn {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    /* Listing image smaller */
+    .show-img { max-height: 30vh !important; }
+
+    /* Map smaller on mobile */
+    #map { height: 250px !important; }
+
+    /* Review submit button full width */
+    .btn-outline-dark.w-100 { width: 100% !important; }
+
+    /* Cards text smaller */
+    .card-text p { font-size: 0.85rem !important; }
+
+    /* Container padding smaller */
+    .container { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+
+    /* Navbar mobile tweaks */
+    .navbar { flex-direction: column !important; height: auto !important; padding: 0.5rem !important; }
+
+    /* Mobile search input narrower */
+    #mobile-search .search-inp { width: 70% !important; }
 }
 
-/* Card Effect */
-.card-img-overlay{
-    opacity: 0;
-}
-.card-img-overlay:hover{
-    opacity: 0.2;
-    background-color: white;
+/* ====== DESKTOP OVERRIDES ====== */
+@media (min-width: 769px) {
+    /* Reset desktop flex alignment */
+    .btns {
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
+    }
+    .btns .btn { min-width: 120px !important; width: auto !important; }
+
+    .show-img { max-height: 50vh !important; }
+    #map { height: 300px !important; }
 }
 
-/* Add Listing page */
-.add-btn{
-    background-color: #fe424d !important;
-    border: none !important;
+@media (min-width: 1200px) {
+    .show-img { max-height: 60vh !important; }
+    #map { height: 400px !important; }
 }
-
-/* Edit page */
-.edit-btn{
-    background-color: #fe424d !important;
-    border: none !important;
-}
-
-/* Show Page */
-.show-img{
-    height: 30vh;
-}
-.btns{
-    display: flex;
-}
-.show-card{
-    padding-left: 0;
-    padding-right: 0;
-}
-
-/* map */
-#map{
-    height: 300px !important;
-    width: 100% !important;
-    display: block !important;
-    visibility: visible !important;
-    position: relative !important;
-}
-
-

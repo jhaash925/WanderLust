@@ -1,11 +1,10 @@
-// controllers/listings.js
 const Listing = require("../models/listing");
 const axios = require("axios");
 
+// ===== SHOW ALL LISTINGS =====
 module.exports.index = async (req, res) => {
   try {
     const allListings = await Listing.find({});
-    // Pass empty query and filters so EJS doesn't break
     res.render("listings/index.ejs", { allListings, q: '', filters: {} });
   } catch (err) {
     console.error(err);
@@ -14,11 +13,13 @@ module.exports.index = async (req, res) => {
   }
 };
 
-
+// ===== NEW LISTING FORM =====
 module.exports.renderNewForm = (req, res) => {
-  res.render("listings/new.ejs");
+  const categories = ["Trending","Rooms","Iconic cities","Mountains","Castles","Pools","Camping","Farms","Arctic","Doms","Boats"];
+  res.render("listings/new.ejs", { categories });
 };
 
+// ===== SHOW SINGLE LISTING =====
 module.exports.showListing = async (req, res) => {
   try {
     const { id } = req.params;
@@ -39,23 +40,36 @@ module.exports.showListing = async (req, res) => {
   }
 };
 
+// ===== CREATE NEW LISTING =====
 module.exports.createListing = async (req, res) => {
   try {
-    const url = req.file.path;
-    const filename = req.file.filename;
+    // Ensure amenities is always an array
+    if (req.body.listing.amenities && !Array.isArray(req.body.listing.amenities)) {
+      req.body.listing.amenities = [req.body.listing.amenities];
+    } else if (!req.body.listing.amenities) {
+      req.body.listing.amenities = [];
+    }
 
     const newListing = new Listing(req.body.listing);
-    newListing.owner = req.user._id;
-    newListing.image = { url, filename };
 
-    // 🌍 MapTiler Geocoding
+    // Assign owner
+    newListing.owner = req.user._id;
+
+    // Assign image if uploaded
+    if (req.file) {
+      const url = req.file.path;
+      const filename = req.file.filename;
+      newListing.image = { url, filename };
+    }
+
+    // 🌍 Geocoding
     const maptilerToken = process.env.MAP_TOKEN;
     const geoResponse = await axios.get(
       `https://api.maptiler.com/geocoding/${encodeURIComponent(newListing.location)}.json`,
       { params: { key: maptilerToken } }
     );
 
-    if (geoResponse.data && geoResponse.data.features.length > 0) {
+    if (geoResponse.data.features.length > 0) {
       newListing.geometry = geoResponse.data.features[0].geometry;
     } else {
       req.flash("error", "Location not found. Try again.");
@@ -64,14 +78,15 @@ module.exports.createListing = async (req, res) => {
 
     await newListing.save();
     req.flash("success", "New Listing Created!");
-    return res.redirect(`/listings/${newListing._id}`);
+    res.redirect(`/listings/${newListing._id}`);
   } catch (err) {
     console.error(err);
     req.flash("error", "Something went wrong while creating listing");
-    return res.redirect("/listings/new");
+    res.redirect("/listings/new");
   }
 };
 
+// ===== RENDER EDIT FORM =====
 module.exports.renderEditForm = async (req, res) => {
   try {
     const { id } = req.params;
@@ -82,30 +97,44 @@ module.exports.renderEditForm = async (req, res) => {
       return res.redirect("/listings");
     }
 
-    let originalImageUrl = listing.image.url;
-    originalImageUrl = originalImageUrl.replace("/upload", "/upload/w_250");
+    const categories = ["Trending","Rooms","Iconic cities","Mountains","Castles","Pools","Camping","Farms","Arctic","Doms","Boats"];
 
-    res.render("listings/edit.ejs", { listing, originalImageUrl });
+    // Prepare image preview
+    let originalImageUrl = "";
+    if (listing.image && listing.image.url) {
+      originalImageUrl = listing.image.url.replace("/upload", "/upload/w_250");
+    }
+
+    res.render("listings/edit.ejs", { listing, categories, originalImageUrl });
   } catch (err) {
     console.error(err);
     req.flash("error", "Cannot load edit form");
-    return res.redirect("/listings");
+    res.redirect("/listings");
   }
 };
 
+
+// ===== UPDATE LISTING =====
 module.exports.updateListing = async (req, res) => {
   try {
-    const { id } = req.params;
-    const listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+    // Ensure amenities is always an array
+    if (req.body.listing.amenities && !Array.isArray(req.body.listing.amenities)) {
+      req.body.listing.amenities = [req.body.listing.amenities];
+    } else if (!req.body.listing.amenities) {
+      req.body.listing.amenities = [];
+    }
 
-    if (typeof req.file !== "undefined") {
+    const { id } = req.params;
+    const listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing }, { new: true });
+
+    if (req.file) {
       const url = req.file.path;
       const filename = req.file.filename;
       listing.image = { url, filename };
       await listing.save();
     }
 
-    // Optional: Re-geocode if location changed
+    // Optional: re-geocode if location changed
     if (req.body.listing.location && req.body.listing.location !== listing.location) {
       const maptilerToken = process.env.MAP_TOKEN;
       const geoResponse = await axios.get(
@@ -114,20 +143,22 @@ module.exports.updateListing = async (req, res) => {
       );
       if (geoResponse.data.features.length > 0) {
         listing.geometry = geoResponse.data.features[0].geometry;
-        listing.location = req.body.listing.location; // update location
+        listing.location = req.body.listing.location;
         await listing.save();
       }
     }
 
     req.flash("success", "Listing Updated!");
-    return res.redirect(`/listings/${id}`);
+    res.redirect(`/listings/${id}`);
   } catch (err) {
     console.error(err);
     req.flash("error", "Something went wrong while updating listing");
-    return res.redirect("/listings");
+    res.redirect("/listings");
   }
 };
 
+
+// ===== DELETE LISTING =====
 module.exports.deleteListing = async (req, res) => {
   try {
     const { id } = req.params;
@@ -141,22 +172,18 @@ module.exports.deleteListing = async (req, res) => {
   }
 };
 
-// Fuzzy search by title or location
+// ===== SEARCH BY TEXT =====
 module.exports.searchListings = async (req, res) => {
   const { q } = req.query;
-  if (!q || q.trim() === "") {
-    return res.redirect("/listings");
-  }
+  if (!q || q.trim() === "") return res.redirect("/listings");
 
   try {
     const listings = await Listing.find(
-      { $text: { $search: q } },               // MongoDB full-text search
-      { score: { $meta: "textScore" } }       // include relevance score
-    )
-    .sort({ score: { $meta: "textScore" } })   // sort by relevance
-    .limit(50);                                // limit results for performance
+      { $text: { $search: q } },
+      { score: { $meta: "textScore" } }
+    ).sort({ score: { $meta: "textScore" } }).limit(50);
 
-    res.render("listings/index.ejs", { allListings: listings, currUser: req.user, q });
+    res.render("listings/index.ejs", { allListings: listings, q, filters: {} });
   } catch (err) {
     console.error(err);
     req.flash("error", "Search failed");
@@ -164,54 +191,40 @@ module.exports.searchListings = async (req, res) => {
   }
 };
 
+// ===== SEARCH & FILTER LISTINGS =====
 module.exports.searchAndFilterListings = async (req, res) => {
-  const { q, category, minPrice, maxPrice, rooms, amenities } = req.query;
-
+  const { q, category, rooms, amenities } = req.query;
   let filter = {};
 
-  // ===== Text search =====
-  if (q && q.trim() !== "") {
-    filter.$text = { $search: q };
-  }
+  // Text search
+  if (q && q.trim() !== "") filter.$text = { $search: q };
 
-  // ===== Category filter =====
-  if (category && category !== "All") {
-    filter.categories = category;
-  }
+  // Category filter
+  if (category && category !== "All") filter.category = category;
 
-  // ===== Price filter =====
-  if (minPrice || maxPrice) {
-    filter.price = {};
-    if (minPrice) filter.price.$gte = parseInt(minPrice);
-    if (maxPrice) filter.price.$lte = parseInt(maxPrice);
-  }
+  // Minimum rooms filter
+  if (rooms) filter.rooms = { $gte: parseInt(rooms) };
 
-  // ===== Rooms filter =====
-  if (rooms) {
-    filter.rooms = { $gte: parseInt(rooms) };
-  }
-
-  // ===== Amenities filter =====
+  // Amenities filter
   if (amenities) {
-    // amenities can be multiple, comma-separated
-    const amenitiesArr = amenities.split(",");
+    // Ensure amenities is an array
+    const amenitiesArr = Array.isArray(amenities) ? amenities : [amenities];
     filter.amenities = { $all: amenitiesArr };
   }
 
   try {
     let query = Listing.find(filter);
 
-    // Sort by relevance if text search exists
-    if (filter.$text) {
-      query = query.sort({ score: { $meta: "textScore" } }).select({ score: { $meta: "textScore" } });
-    }
+    if (filter.$text) query = query.sort({ score: { $meta: "textScore" } });
 
     const listings = await query.limit(50);
 
-    res.render("listings/index.ejs", { allListings: listings, currUser: req.user, q, filters: req.query });
+    // Pass filters and categories for form prefill
+    const categories = ["Trending","Rooms","Iconic cities","Mountains","Castles","Pools","Camping","Farms","Arctic","Doms","Boats"];
+    res.render("listings/index.ejs", { allListings: listings, filters: req.query, categories, q });
   } catch (err) {
     console.error(err);
-    req.flash("error", "Search failed");
+    req.flash("error", "Filter failed");
     res.redirect("/listings");
   }
 };
