@@ -89,6 +89,7 @@ app.use((req, res, next) => {
     res.locals.currUser = req.user; // passport puts the logged-in user on req.user
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
+    res.locals.categories = ["Trending","Rooms","Iconic cities","Mountains","Castles","Pools","Camping","Farms","Arctic","Doms","Boats"];
     next();
 });
 

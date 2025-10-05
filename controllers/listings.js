@@ -205,6 +205,17 @@ module.exports.searchAndFilterListings = async (req, res) => {
   // Minimum rooms filter
   if (rooms) filter.rooms = { $gte: parseInt(rooms) };
 
+  // Price range filter
+  const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : null;
+  const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : null;
+  if (minPrice !== null && maxPrice !== null) {
+    filter.price = { $gte: minPrice, $lte: maxPrice };
+  } else if (minPrice !== null) {
+    filter.price = { $gte: minPrice };
+  } else if (maxPrice !== null) {
+    filter.price = { $lte: maxPrice };
+  }
+
   // Amenities filter
   if (amenities) {
     // Ensure amenities is an array

@@ -1,43 +1,62 @@
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
-  <div class="container-fluid">
+<nav class="navbar bg-body-light border-bottom sticky-top">
+  <div class="container-fluid d-flex align-items-center">
     <!-- Brand -->
     <a class="navbar-brand" href="/listings"><i class="fa-regular fa-compass"></i></a>
 
-    <!-- Mobile toggler -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
+    <!-- Explore (left) -->
+    <div class="navbar-nav d-flex align-items-center d-none d-lg-flex">
+      <a class="nav-link" href="/listings">Explore</a>
+    </div>
+
+    <!-- Search (center) -->
+    <div class="mx-auto d-flex justify-content-center flex-grow-1 d-none d-lg-flex">
+      <form class="d-flex w-25" role="search" action="/listings/search-filter" method="GET">
+        <input class="form-control me-2 search-inp" type="search" name="q" placeholder="Search destinations"/>
+        <button class="btn search-btn" type="submit">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- Become a host (desktop only, left of hamburger) -->
+    <div class="d-none d-md-flex navbar-nav me-2 align-items-center">
+      <a class="nav-link" href="/listings/new">Become a host</a>
+    </div>
+
+    <!-- Hamburger toggler (right) -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Collapsible Nav -->
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <!-- LEFT: Explore -->
-      <div class="navbar-nav d-flex align-items-center">
-        <a class="nav-link" href="/listings">Explore</a>
+    <!-- Offcanvas Menu -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasMenuLabel">Menu</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
+      <div class="offcanvas-body">
+        <div class="navbar-nav text-start">
+          <a class="nav-link" href="/listings/new">Become a host</a>
 
-      <!-- CENTER: Desktop Search (hidden on mobile) -->
-      <div class="mx-auto d-none d-md-flex justify-content-center flex-grow-1">
-        <form class="d-flex w-25" role="search" action="/listings/search-filter" method="GET">
-          <input class="form-control me-2 search-inp" type="search" name="q" placeholder="Search destinations"/>
-          <button class="btn search-btn" type="submit">
-            <i class="fa-solid fa-magnifying-glass"></i>
+          <!-- ✅ Filters option aligned properly -->
+          <button 
+            type="button" 
+            class="btn btn-link nav-link text-start p-0" 
+            data-bs-toggle="modal" 
+            data-bs-target="#filterModal">
+            Filters
           </button>
-        </form>
+
+          <% if(typeof currUser === 'undefined' || !currUser) { %>
+            <a class="nav-link" href="/signup"><b>Sign up</b></a>
+            <a class="nav-link" href="/login"><b>Log in</b></a>
+          <% } %>
+
+          <% if(typeof currUser !== 'undefined' && currUser) { %>
+            <a class="nav-link" href="/logout"><b>Log out</b></a>
+          <% } %>
+        </div>
       </div>
-
-      <!-- RIGHT: Desktop Become a host + Auth -->
-      <div class="navbar-nav ms-auto d-none d-md-flex align-items-center">
-        <a class="nav-link" href="/listings/new">Become a host</a>
-        <% if(typeof currUser === 'undefined' || !currUser) { %>
-          <a class="nav-link" href="/signup"><b>Sign up</b></a>
-          <a class="nav-link" href="/login"><b>Log in</b></a>
-        <% } %>
-        <% if(typeof currUser !== 'undefined' && currUser) { %>
-          <a class="nav-link" href="/logout"><b>Log out</b></a>
-        <% } %>
-      </div>
-
-
     </div>
   </div>
 </nav>

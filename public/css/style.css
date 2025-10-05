@@ -60,6 +60,15 @@ body {
 .btns .btn {
     min-width: 120px !important;
 }
+.custom-btn {
+    background-color: #fe424d !important;
+    border-color: #fe424d !important;
+    color: white !important;
+}
+.custom-btn:hover {
+    background-color: #d63b44 !important;
+    border-color: #d63b44 !important;
+}
 
 /* ====== SHOW PAGE ====== */
 .show-img { width: 100%; height: auto; object-fit: cover; border-radius: 1rem; }
@@ -96,6 +105,12 @@ body {
     /* Review submit button full width */
     .btn-outline-dark.w-100 { width: 100% !important; }
 
+    /* Edit and delete buttons same size on mobile */
+    .btns .btn, .btns a {
+      width: 100% !important;
+      display: block !important;
+    }
+
     /* Cards text smaller */
     .card-text p { font-size: 0.85rem !important; }
 
@@ -117,6 +132,19 @@ body {
         align-items: flex-start !important;
         justify-content: center !important;
     }
+
+    /* Tablet view: make edit and delete buttons same width */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .btns .btn, .btns a {
+            width: 48% !important;
+            display: inline-block !important;
+            box-sizing: border-box !important;
+        }
+        .btns .btn:first-child, .btns a:first-child {
+            margin-right: 4% !important;
+        }
+    }
+
     .btns .btn { min-width: 120px !important; width: auto !important; }
 
     .show-img { max-height: 50vh !important; }
@@ -126,4 +154,38 @@ body {
 @media (min-width: 1200px) {
     .show-img { max-height: 60vh !important; }
     #map { height: 400px !important; }
+}
+/* Add offcanvas menu box styling */
+.offcanvas {
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-radius: 8px 0 0 8px;
+  width: 250px;
+}
+
+.offcanvas-header {
+  border-bottom: 1px solid #ddd;
+  padding: 1rem;
+}
+
+.offcanvas-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.offcanvas-body {
+  padding: 1rem;
+}
+
+.offcanvas .nav-link {
+  padding: 0.5rem 0;
+  font-weight: 500;
+  color: #222;
+}
+
+.offcanvas .nav-link:hover {
+  color: #fe424d;
+  text-decoration: none;
+  background-color: #f8f9fa;
+  border-radius: 4px;
 }
