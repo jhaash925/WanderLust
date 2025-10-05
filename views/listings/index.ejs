@@ -14,11 +14,15 @@
       text-align: center;
       opacity: 0.7;
       cursor: pointer;
-      transition: opacity 0.2s, transform 0.2s;
+      transition: opacity 0.2s, transform 0.2s, color 0.2s;
     }
     .filter:hover{
       opacity: 1;
-      transform: scale(1.05);
+      transform: scale(1.2);
+    }
+    .filter:hover i,
+    .filter:hover p{
+      color: #fe424d !important;
     }
     .filter p{
       font-size: 0.8rem;
@@ -45,6 +49,11 @@
       padding: 0.5rem 1rem;
       display: flex;
       align-items: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .tax-toggle:hover{
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
     .form-check-input:checked {
       background-color: #fe424d !important;
