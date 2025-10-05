@@ -1,2 +1,0 @@
-- [x] Add horizontal line (<hr>) below the filters section in views/listings/index.ejs to separate from listings.
-- [x] Verify tax display functionality (GST info shows when toggle is on).
