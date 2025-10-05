@@ -86,9 +86,13 @@
               <div class="col-12 col-md-6 mb-3">
                 <div class="card">
                   <div class="card-body">
-                    <h5 class="card-title"><%= review.author.username %></h5>
-                    <p class="starability-result card-text" data-rating="<%=review.rating%>"></p>
-                    <p class="card-text"><%=review.comment%></p>
+<h5 class="card-title"><%= review.author.username %></h5>
+<div class="review-rating">
+  <p class="starability-result card-text" data-rating="<%=review.rating%>"></p>
+</div>
+<div class="review-comment">
+  <p class="card-text"><%=review.comment%></p>
+</div>
                   </div>
                   <form action="/listings/<%= listing._id %>/reviews/<%= review._id%>?_method=DELETE" method="POST" class="mb-3 mt-3">
                     <button class="btn btn-sm btn-dark w-100">Delete</button>
