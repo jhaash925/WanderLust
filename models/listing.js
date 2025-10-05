@@ -65,7 +65,6 @@ listingSchema.index({ category: 1 });
 listingSchema.index({ amenities: 1 });
 listingSchema.index({ propertyType: 1 });
 
-// Text index for search
 listingSchema.index({ title: "text", location: "text" });
 
 module.exports = mongoose.model("Listing", listingSchema);

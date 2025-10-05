@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const axios = require("axios");
 const initData = require("./data.js");
 const Listing = require("../models/listing.js");
 
@@ -18,8 +19,24 @@ async function main() {
 
 const initDB = async () => {
   await Listing.deleteMany({});
-  initData.data = initData.data.map((obj) => ({...obj, owner: "68c7b76298f11c3018ac2817",}));
-  await Listing.insertMany(initData.data);
+
+  const processedData = [];
+  for (let obj of initData.data) {
+    // Add category if missing
+    if (!obj.category) {
+      obj.category = "Trending"; // default
+    }
+
+    // Add dummy geometry if missing
+    if (!obj.geometry) {
+      obj.geometry = { type: "Point", coordinates: [0, 0] }; // dummy
+    }
+
+    obj.owner = "68c7b76298f11c3018ac2817";
+    processedData.push(obj);
+  }
+
+  await Listing.insertMany(processedData);
   console.log("data was initialized");
 };
 
