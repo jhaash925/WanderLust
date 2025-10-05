@@ -189,3 +189,71 @@ body {
   background-color: #f8f9fa;
   border-radius: 4px;
 }
+
+/* Custom popup box styles */
+.hamburger-popup {
+  position: fixed;
+  top: 56px; /* below navbar */
+  right: 10px;
+  width: 250px;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-radius: 8px;
+  z-index: 1050;
+  animation: fadeInScale 0.3s ease forwards;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.popup-header h5 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.popup-header button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #333;
+}
+
+.popup-body {
+  padding: 1rem;
+}
+
+.popup-body .nav-link,
+.popup-body .btn-link {
+  display: block;
+  padding: 0.5rem 0;
+  font-weight: 500;
+  color: #222;
+  text-align: left;
+}
+
+.popup-body .nav-link:hover,
+.popup-body .btn-link:hover {
+  color: #fe424d;
+  text-decoration: none;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
