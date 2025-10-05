@@ -111,6 +111,16 @@
     </div>
   </div>
 
+  <hr class="desktop-only" style="width: 100%; border: 1px solid #ccc; margin: 1rem 0;">
+  
+  <style>
+    @media (max-width: 1024px) {
+      .desktop-only {
+        display: none;
+      }
+    }
+  </style>
+
   <div class="container my-3 d-md-none" id="mobile-search">
   <form class="d-flex justify-content-center gap-2" role="search" action="/listings/search-filter" method="GET">
     <input class="form-control search-inp" type="search" name="q" placeholder="Search destinations"/>
