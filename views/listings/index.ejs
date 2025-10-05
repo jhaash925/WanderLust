@@ -137,7 +137,7 @@
     <% (allListings || []).forEach(listing => { %>
       <a href="/listings/<%=listing._id%>" class="listing-link text-decoration-none">
         <div class="card col listing-card">
-          <img src="<%=listing.image?.url || '/images/default.jpg'%>" class="card-img-top" alt="listing-image" style="height: 20rem;">
+<img src="<%=listing.image?.url || '/images/default.jpg'%>" class="card-img-top" alt="listing-image">
           <div class="card-body">
             <p class="card-text">
               <b><%= listing.title %></b><br>

@@ -35,9 +35,9 @@ body {
 .f-info { text-align: center; height: auto; padding: 1rem 0; background-color: #ebebeb; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
 
 /* ====== CARDS ====== */
-.listing-card { border: none !important; margin-bottom: 2rem; }
-.card-img-top { border-radius: 1rem !important; width: 100% !important; height: auto !important; object-fit: cover !important; }
-.card-body { padding: 0.5rem !important; }
+.listing-card { border: none !important; margin-bottom: 2rem; display: flex; flex-direction: column; height: 100%; }
+.card-img-top { border-radius: 1rem !important; width: 100% !important; height: 20rem !important; object-fit: cover !important; flex-shrink: 0; }
+.card-body { padding: 0.5rem !important; flex-grow: 1; display: flex; align-items: flex-start; }
 .card-text p { font-weight: 400 !important; font-size: 0.95rem; }
 .listing-link { text-decoration: none; }
 
